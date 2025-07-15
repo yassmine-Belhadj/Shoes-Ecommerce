@@ -1,17 +1,124 @@
+import 'package:aftercode/screens/AccountSettingsScreen.dart';
+import 'package:aftercode/screens/ProfileScreen.dart';
+import 'package:aftercode/screens/allProductsScreen.dart';
+import 'package:aftercode/screens/notifications_screen.dart';
+import 'package:aftercode/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:motion_tab_bar/MotionTabBar.dart';
-import 'package:motion_tab_bar/MotionTabBarController.dart';
-import 'allProductsScreen.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:provider/provider.dart';
+
 import 'filter_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> {
+  int _page = 2; // Shop tab highlighted by default
+  final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
+
+    return Scaffold(
+      body: const HomeTabScreen(),
+      bottomNavigationBar: SizedBox(
+        height: 80.0, // Increased height to accommodate labels
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            CurvedNavigationBar(
+              key: _bottomNavigationKey,
+              index: _page,
+              height: 60.0,
+              items: const <Widget>[
+                Icon(Icons.home_outlined, size: 28),
+                Icon(Icons.favorite_border, size: 28),
+                Icon(Icons.shopping_bag_outlined, size: 28),
+                Icon(Icons.notifications_none_sharp, size: 28),
+                Icon(Icons.person_outline, size: 28),
+              ],
+              color: Colors.white,
+              buttonBackgroundColor: Colors.blue[600],
+              backgroundColor: Colors.blueAccent, // Fixed to a solid Color
+              animationCurve: Curves.easeOutCubic,
+              animationDuration: const Duration(milliseconds: 600),
+              onTap: (int index) {
+                setState(() {
+                  _page = index;
+                });
+                String? route;
+                switch (index) {
+                  case 0:
+                    return; // Stay on home screen
+                  case 1:
+                    route = '/wishlist';
+                    break;
+                  case 2:
+                    route = '/shop';
+                    break;
+                  case 3:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotificationScreen()),
+                    );
+                    return; // Exit early to prevent route push
+                  case 4:
+                    route = '/account-settings';
+                    break;
+                }
+                if (route != null) {
+                  Navigator.pushNamed(context, route);
+                }
+              },
+            ),
+            // Custom label row
+            Container(
+              height: 20.0,
+              color: Colors.transparent,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildLabel("Home", 0),
+                  _buildLabel("Wishlist", 1),
+                  _buildLabel("Shop", 2),
+                  _buildLabel("Notifications", 3),
+                  _buildLabel("Profile", 4),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text, int index) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: _page == index ? FontWeight.bold : FontWeight.normal,
+        color: _page == index ? Colors.white : Colors.grey[600],
+      ),
+    );
+  }
+}
+
+class HomeTabScreen extends StatefulWidget {
+  const HomeTabScreen({super.key});
+
+  @override
+  _HomeTabScreenState createState() => _HomeTabScreenState();
+}
+
+class _HomeTabScreenState extends State<HomeTabScreen> {
   int _selectedCategoryIndex = 0;
-  MotionTabBarController? _motionTabBarController;
   bool _showFullScreenSearch = false;
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
@@ -82,12 +189,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _motionTabBarController = MotionTabBarController(
-      initialIndex: 0,
-      length: 5,
-      vsync: this,
-    );
-
     _searchFocusNode.addListener(() {
       if (_searchFocusNode.hasFocus) {
         setState(() {
@@ -99,7 +200,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _motionTabBarController!.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -119,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              icon: Icon(Icons.grid_view, color: Colors.black),
+              icon: const Icon(Icons.grid_view, color: Colors.black),
               onPressed: () async {
                 final filters = await Navigator.push(
                   context,
@@ -142,12 +242,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         color: Colors.grey[600],
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.location_on, size: 16, color: Colors.orange),
-                        SizedBox(width: 4),
+                        const Icon(Icons.location_on, size: 16, color: Colors.orange),
+                        const SizedBox(width: 4),
                         Flexible(
                           child: Text(
                             'Mondolibug, Sylhet',
@@ -169,13 +269,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               alignment: Alignment.topRight,
               children: [
                 IconButton(
-                  icon: Icon(Icons.shopping_bag_outlined, color: Colors.black),
+                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
                   onPressed: () {},
                 ),
                 Container(
                   width: 10,
                   height: 10,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.orange,
                     shape: BoxShape.circle,
                   ),
@@ -186,54 +286,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       body: _showFullScreenSearch ? _buildFullScreenSearch() : _buildMainContent(isSmallScreen),
-      bottomNavigationBar: _showFullScreenSearch ? null : MotionTabBar(
-        controller: _motionTabBarController,
-        initialSelectedTab: "Home",
-        labels: const ["Home", "Wishlist", "Shop", "Search", "Profile"],
-        icons: const [
-          Icons.home_outlined,
-          Icons.favorite_border,
-          Icons.shopping_bag_outlined,
-          Icons.notifications_none_rounded,
-          Icons.person_outline
-        ],
-        tabSize: 50,
-        tabBarHeight: 55,
-        textStyle: TextStyle(
-          fontSize: 12,
-          color: Colors.black,
-          fontWeight: FontWeight.w500,
-        ),
-        tabIconColor: Colors.blue[600],
-        tabIconSize: 28.0,
-        tabIconSelectedSize: 26.0,
-        tabSelectedColor: Colors.blue[600],
-        tabIconSelectedColor: Colors.white,
-        tabBarColor: Colors.white,
-        onTabItemSelected: (int value) {
-          setState(() {
-            _motionTabBarController!.index = value;
-          });
-        },
-      ),
     );
   }
 
   Widget _buildMainContent(bool isSmallScreen) {
-    return TabBarView(
-      physics: NeverScrollableScrollPhysics(),
-      controller: _motionTabBarController,
-      children: [
-        _buildHomeContent(isSmallScreen),
-        Center(child: Text("Wishlist Content")),
-        Center(child: Text("Shop Content")),
-        Center(child: Text("Search Content")),
-        Center(child: Text("Profile Content")),
-      ],
-    );
-  }
-
-  Widget _buildHomeContent(bool isSmallScreen) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: isSmallScreen ? 16.0 : 24.0,
@@ -242,15 +298,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _buildSearchBar(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Container(
             height: 50,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: categories.length,
-              separatorBuilder: (context, index) => SizedBox(width: 8),
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final isSelected = _selectedCategoryIndex == index;
                 return GestureDetector(
@@ -260,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     });
                   },
                   child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 200),
                     padding: EdgeInsets.symmetric(
                       horizontal: isSelected ? 20.0 : 16.0,
                       vertical: 12.0,
@@ -283,10 +339,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           height: 24,
                         ),
                         if (isSelected) ...[
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             categories[index],
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,
                             ),
@@ -299,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               },
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -314,17 +370,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AllProductsScreen()),
+                    MaterialPageRoute(builder: (context) => const AllProductsScreen()),
                   );
                 },
-                child: Text(
+                child: const Text(
                   'See all',
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -350,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       SizedBox(
                         height: constraints.maxWidth > 600 ? 400 : 350,
                         child: _buildFeaturedProductCard(allProducts[2]),
@@ -383,11 +439,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 12.0),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 12.0),
               child: Icon(Icons.search, color: Colors.grey),
             ),
-            Text(
+            const Text(
               'Looking for shoes',
               style: TextStyle(color: Colors.grey),
             ),
@@ -416,12 +472,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               autofocus: true,
               decoration: InputDecoration(
                 border: InputBorder.none,
-                prefixIcon: Icon(Icons.search, color: Colors.grey),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 hintText: 'Search Your Shoes',
-                contentPadding: EdgeInsets.symmetric(vertical: 15),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                  icon: Icon(Icons.close, color: Colors.grey),
+                  icon: const Icon(Icons.close, color: Colors.grey),
                   onPressed: () {
                     _searchController.clear();
                     setState(() {});
@@ -452,7 +508,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   _showFullScreenSearch = false;
                 });
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         ),
@@ -460,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: _searchController.text.isEmpty
               ? _buildSearchHistory()
               : filteredProducts.isEmpty
-              ? Center(
+              ? const Center(
             child: Text(
               'No products found',
               style: TextStyle(color: Colors.grey),
@@ -474,12 +530,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildSearchHistory() {
     return ListView(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               'Recent Searches',
               style: TextStyle(
                 fontSize: 16,
@@ -493,16 +549,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _searchHistory.clear();
                   });
                 },
-                child: Text(
+                child: const Text(
                   'Clear all',
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
           ],
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         if (_searchHistory.isEmpty)
-          Padding(
+          const Padding(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Text(
               'No recent searches',
@@ -512,10 +568,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         else
           Column(
             children: _searchHistory.map((search) => ListTile(
-              leading: Icon(Icons.history, color: Colors.grey),
+              leading: const Icon(Icons.history, color: Colors.grey),
               title: Text(search),
               trailing: IconButton(
-                icon: Icon(Icons.close, size: 16),
+                icon: const Icon(Icons.close, size: 16),
                 onPressed: () {
                   setState(() {
                     _searchHistory.remove(search);
@@ -534,7 +590,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildSearchResults() {
     return ListView.builder(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       itemCount: filteredProducts.length,
       itemBuilder: (context, index) {
         final product = filteredProducts[index];
@@ -547,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           title: Text(product['name']),
           subtitle: Text('\$${product['price'].toStringAsFixed(2)}'),
-          trailing: Icon(Icons.arrow_forward_ios, size: 16),
+          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () {
             // Navigate to product detail or perform action
           },
@@ -566,7 +622,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 10,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -578,14 +634,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.blue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     product['type'],
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.blue,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -609,25 +665,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     Text(
                       product['name'],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       '\$${product['price'].toStringAsFixed(2)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
             ],
           ),
           Positioned(
@@ -639,7 +695,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: Icon(Icons.add, color: Colors.white),
+                icon: const Icon(Icons.add, color: Colors.white),
                 onPressed: () {},
               ),
             ),
@@ -660,7 +716,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 15,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -676,33 +732,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.blue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           product['type'],
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.blue,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
                       Text(
                         product['name'],
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
                           height: 1.2,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         '\$${product['price'].toStringAsFixed(2)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
@@ -712,7 +768,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Hero(
                     tag: product['image'],
@@ -740,11 +796,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     color: Colors.blue.withOpacity(0.3),
                     blurRadius: 10,
                     spreadRadius: 2,
-                    offset: Offset(0, 4),
-                  )],
+                    offset: const Offset(0, 4),
+                  )
+                ],
               ),
               child: IconButton(
-                icon: Icon(Icons.add, color: Colors.white, size: 24),
+                icon: const Icon(Icons.add, color: Colors.white, size: 24),
                 onPressed: () {},
               ),
             ),
