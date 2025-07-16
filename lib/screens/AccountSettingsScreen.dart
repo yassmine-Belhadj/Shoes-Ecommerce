@@ -2,7 +2,6 @@ import 'package:aftercode/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class AccountSettingsScreen extends StatefulWidget {
   const AccountSettingsScreen({super.key});
 
@@ -17,18 +16,24 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentTime = TimeOfDay.now().format(context);
-    final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account & Settings'),
+        title: const Text(
+          'Account & Settings',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black, // Explicitly set to black for visibility
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          icon: const Icon(Icons.arrow_back, color: Colors.black), // Explicitly set to black
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: SingleChildScrollView(
@@ -36,25 +41,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                currentTime,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
             Text(
-              'Account & Settings',
-              style: theme.textTheme.headlineSmall?.copyWith(
+              'Account',
+              style: TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: Colors.grey.shade600,
               ),
             ),
-            const SizedBox(height: 28),
-            _buildSectionHeader('ACCOUNT'),
+            const SizedBox(height: 16),
             _buildSettingsCard(
               children: [
                 _buildSettingsItem(
@@ -96,7 +92,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               isCard: false,
             ),
             const SizedBox(height: 32),
-            _buildSectionHeader('APP SETTINGS'),
+            Text(
+              'App Settings',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 16),
             _buildSettingsCard(
               children: [
                 _buildToggleItem(
@@ -130,30 +134,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Colors.grey.shade600,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
-          fontSize: 13,
-        ),
-      ),
-    );
-  }
-
   Widget _buildSettingsCard({required List<Widget> children}) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.grey.withOpacity(0.1),
-          width: 1,
-        ),
       ),
       child: Column(children: children),
     );

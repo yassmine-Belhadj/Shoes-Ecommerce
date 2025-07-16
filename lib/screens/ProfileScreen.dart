@@ -5,32 +5,37 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentTime = TimeOfDay.now().format(context);
     final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+            onPressed: () {
+              // Handle edit action
+            },
+          ),
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                currentTime,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
             Center(
               child: Stack(
                 alignment: Alignment.center,
@@ -93,55 +98,33 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(
-                  color: Colors.grey.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _buildProfileRow(
-                      context,
-                      label: 'Full Name',
-                      value: 'Safa Wanen',
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(height: 1, thickness: 0.5),
-                    ),
-                    _buildProfileRow(
-                      context,
-                      label: 'Username',
-                      value: 'safawanene',
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(height: 1, thickness: 0.5),
-                    ),
-                    _buildProfileRow(
-                      context,
-                      label: 'Email Address',
-                      value: 'safawanene@gmail.com',
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(height: 1, thickness: 0.5),
-                    ),
-                    _buildProfileRow(
-                      context,
-                      label: 'Password',
-                      value: '••••••••',
-                      isPassword: true,
-                    ),
-                  ],
-                ),
-              ),
+            _buildEditableField(
+              context,
+              label: 'Full Name',
+              value: 'Safa Wanen',
+              isEditable: true,
+            ),
+            const SizedBox(height: 16),
+            _buildEditableField(
+              context,
+              label: 'Username',
+              value: 'safawanene',
+              isEditable: true,
+            ),
+            const SizedBox(height: 16),
+            _buildEditableField(
+              context,
+              label: 'Email Address',
+              value: 'safawanene@gmail.com',
+              isEditable: true,
+            ),
+            const SizedBox(height: 16),
+            _buildEditableField(
+              context,
+              label: 'Password',
+              value: '••••••••',
+              isPassword: true,
+              isEditable: true,
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -172,45 +155,56 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileRow(
+  Widget _buildEditableField(
       BuildContext context, {
         required String label,
         required String value,
         bool isPassword = false,
+        bool isEditable = false,
       }) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey.withOpacity(0.2),
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
             label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 15,
-              color: Colors.grey,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Text(
-            value,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: isPassword
-                  ? Colors.grey
-                  : Theme.of(context).textTheme.bodyLarge?.color,
+              fontSize: 14,
+              color: Colors.grey.shade600,
             ),
           ),
-        ),
-        if (!isPassword)
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: isPassword
+                        ? Colors.grey
+                        : Theme.of(context).textTheme.bodyLarge?.color,
+                  ),
+                ),
+              ),
+              if (isEditable)
+                Icon(
+                  Icons.edit_outlined,
+                  size: 20,
+                  color: Colors.blue.withOpacity(0.7),
+                ),
+            ],
           ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -223,7 +217,7 @@ class ProfileScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.camera),
+                leading: const Icon(Icons.camera, color: Colors.blue),
                 title: const Text('Take Photo'),
                 onTap: () {
                   Navigator.pop(context);
@@ -231,7 +225,7 @@ class ProfileScreen extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library),
+                leading: const Icon(Icons.photo_library, color: Colors.blue),
                 title: const Text('Choose from Gallery'),
                 onTap: () {
                   Navigator.pop(context);

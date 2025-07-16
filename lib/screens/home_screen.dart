@@ -694,13 +694,19 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
             right: 12,
             bottom: 12,
             child: Container(
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: Colors.blue,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
               ),
               child: IconButton(
-                icon: const Icon(Icons.add, color: Colors.white),
+                icon: const Icon(Icons.add, color: Colors.white, size: 20),
                 onPressed: () {},
+                padding: EdgeInsets.zero,
               ),
             ),
           ),
@@ -794,7 +800,10 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
               height: 50,
               decoration: BoxDecoration(
                 color: Colors.blue,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.blue.withOpacity(0.3),
@@ -807,6 +816,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
               child: IconButton(
                 icon: const Icon(Icons.add, color: Colors.white, size: 24),
                 onPressed: () {},
+                padding: EdgeInsets.zero,
               ),
             ),
           ),
