@@ -1,6 +1,7 @@
 import 'package:aftercode/screens/AccountSettingsScreen.dart';
 import 'package:aftercode/screens/ProfileScreen.dart';
 import 'package:aftercode/screens/allProductsScreen.dart';
+import 'package:aftercode/screens/favorites_screen.dart';
 import 'package:aftercode/screens/notifications_screen.dart';
 import 'package:aftercode/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -57,8 +58,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 0:
                     return; // Stay on home screen
                   case 1:
-                    route = '/wishlist';
-                    break;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FavoriteScreen()),
+                    );
+                    return;                    break;
                   case 2:
                     route = '/shop';
                     break;
