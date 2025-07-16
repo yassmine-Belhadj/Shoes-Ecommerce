@@ -7,8 +7,8 @@ import 'package:aftercode/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:provider/provider.dart';
-
 import 'filter_screen.dart';
+import 'ProductDetailsScreen.dart'; // Import ProductDetailsScreen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: const HomeTabScreen(),
       bottomNavigationBar: SizedBox(
-        height: 80.0, // Increased height to accommodate labels
+        height: 80.0,
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
               color: Colors.white,
               buttonBackgroundColor: Colors.blue[600],
-              backgroundColor: Colors.blueAccent, // Fixed to a solid Color
+              backgroundColor: Colors.blueAccent,
               animationCurve: Curves.easeOutCubic,
               animationDuration: const Duration(milliseconds: 600),
               onTap: (int index) {
@@ -56,13 +56,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 String? route;
                 switch (index) {
                   case 0:
-                    return; // Stay on home screen
+                    return;
                   case 1:
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const FavoriteScreen()),
                     );
-                    return;                    break;
+                    return;
                   case 2:
                     route = '/shop';
                     break;
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       context,
                       MaterialPageRoute(builder: (context) => const NotificationScreen()),
                     );
-                    return; // Exit early to prevent route push
+                    return;
                   case 4:
                     route = '/account-settings';
                     break;
@@ -81,7 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
             ),
-            // Custom label row
             Container(
               height: 20.0,
               color: Colors.transparent,
@@ -150,35 +149,40 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
       'price': 483.00,
       'type': 'BEST SELLER',
       'image': 'nike_jordan.png',
-      'brand': 'Nike'
+      'brand': 'Nike',
+      'description': 'Iconic basketball shoes with premium style and comfort.',
     },
     {
       'name': 'Nike Air Max',
       'price': 897.99,
       'type': 'BEST SELLER',
       'image': 'nike_air_max.png',
-      'brand': 'Nike'
+      'brand': 'Nike',
+      'description': 'Air Max shoes with superior cushioning for all-day wear.',
     },
     {
       'name': 'Nike Air Jordan',
       'price': 849.69,
       'type': 'BEST CHOICE',
       'image': 'nike_air_jordan.png',
-      'brand': 'Nike'
+      'brand': 'Nike',
+      'description': 'High-performance sneakers with a sleek design.',
     },
     {
       'name': 'Adidas Ultraboost',
       'price': 180.00,
       'type': 'RUNNING',
       'image': 'adidas_ultraboost.png',
-      'brand': 'Adidas'
+      'brand': 'Adidas',
+      'description': 'Running shoes with responsive Boost cushioning.',
     },
     {
       'name': 'Puma RS-X',
       'price': 120.00,
       'type': 'CASUAL',
       'image': 'puma_rsx.png',
-      'brand': 'Puma'
+      'brand': 'Puma',
+      'description': 'Bold and stylish casual sneakers.',
     },
   ];
 
@@ -609,7 +613,12 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
           subtitle: Text('\$${product['price'].toStringAsFixed(2)}'),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
           onTap: () {
-            // Navigate to product detail or perform action
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductDetailsScreen(product: product),
+              ),
+            );
           },
         );
       },
@@ -617,210 +626,230 @@ class _HomeTabScreenState extends State<HomeTabScreen> {
   }
 
   Widget _buildProductCard(Map<String, dynamic> product) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailsScreen(product: product),
           ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    product['type'],
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Image.asset(
-                    'assets/images/products/${product['image']}',
-                    height: 120,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product['name'],
+                    child: Text(
+                      product['type'],
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '\$${product['price'].toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
                         color: Colors.blue,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
-            ],
-          ),
-          Positioned(
-            right: 12,
-            bottom: 12,
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  bottomRight: Radius.circular(8),
+                Expanded(
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/products/${product['image']}',
+                      height: 120,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.add, color: Colors.white, size: 20),
-                onPressed: () {},
-                padding: EdgeInsets.zero,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product['name'],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '\$${product['price'].toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  ),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.add, color: Colors.white, size: 20),
+                  onPressed: () {},
+                  padding: EdgeInsets.zero,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildFeaturedProductCard(Map<String, dynamic> product) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailsScreen(product: product),
           ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          product['type'],
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            product['type'],
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        product['name'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          height: 1.2,
+                        const SizedBox(height: 24),
+                        Text(
+                          product['name'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            height: 1.2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '\$${product['price'].toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                          height: 1.2,
+                        const SizedBox(height: 8),
+                        Text(
+                          '\$${product['price'].toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                            height: 1.2,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Hero(
-                    tag: product['image'],
-                    child: Image.asset(
-                      'assets/images/products/${product['image']}',
-                      height: 180,
-                      fit: BoxFit.contain,
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  bottomRight: Radius.circular(8),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.3),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 4),
-                  )
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Hero(
+                      tag: product['image'],
+                      child: Image.asset(
+                        'assets/images/products/${product['image']}',
+                        height: 180,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              child: IconButton(
-                icon: const Icon(Icons.add, color: Colors.white, size: 24),
-                onPressed: () {},
-                padding: EdgeInsets.zero,
+            ),
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.add, color: Colors.white, size: 24),
+                  onPressed: () {},
+                  padding: EdgeInsets.zero,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
