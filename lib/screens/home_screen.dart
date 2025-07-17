@@ -1,4 +1,5 @@
 import 'package:aftercode/screens/AccountSettingsScreen.dart';
+import 'package:aftercode/screens/CartScreen.dart';
 import 'package:aftercode/screens/ProfileScreen.dart';
 import 'package:aftercode/screens/allProductsScreen.dart';
 import 'package:aftercode/screens/favorites_screen.dart';
@@ -64,7 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                     return;
                   case 2:
-                    route = '/shop';
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CartScreen()),
+                    );
                     break;
                   case 3:
                     Navigator.push(
