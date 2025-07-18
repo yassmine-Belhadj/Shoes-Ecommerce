@@ -1,3 +1,4 @@
+import 'package:aftercode/screens/CheckoutScreen.dart';
 import 'package:flutter/material.dart';
 
 class CartScreen extends StatefulWidget {
@@ -184,14 +185,23 @@ class _CartScreenState extends State<CartScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle checkout
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CheckoutScreen(
+                            subtotal: subtotal,
+                            shipping: shipping,
+                            total: total,
+                          ),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12), // More rounded corners
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: const Text(
@@ -211,7 +221,6 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 }
-
 class CartItemCard extends StatelessWidget {
   final String name;
   final double price;
